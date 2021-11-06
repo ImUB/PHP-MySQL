@@ -43,7 +43,7 @@
       } elseif (isset($_POST["back"])) {
      ?>
      <FONT size="4">텍스트 송신 테스트</FONT>
-     <form name="form1" action="confirm.php" method="post">
+     <form name="form1" action="confirm.php" method="post" enctype="multipart/form-data">
        이름: <input type="text" name="onname"><BR>
        성별:
        <input type="radio" name="gender" value="남">남
@@ -82,6 +82,9 @@
        <BR>
        본문: <BR>
        <textarea name="bonmun" rows="8" cols="80"></textarea><BR>
+       <input type="hidden" name="MAX_FILE_SIZE" value="100000">
+       이미지:<input type="file" name="uploadfile"><BR>
+       설명:<input type="text" name="comment"><BR><BR>
        <input type="submit" value="송신">
        <input type="hidden" name="user_id" value="0001">
      </form>

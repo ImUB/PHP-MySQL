@@ -43,7 +43,31 @@
         print "저의 취미는 없습니다.<BR><BR>";
       }
       print "본문 :<BR>";
-      print nl2br($_POST["bonmun"]);
+      print nl2br($_POST["bonmun"])."<BR>";
+
+      $file_dir = '/Library/WebServer/Documents/images/';
+      $file_path = $file_dir.$_FILES["uploadfile"]["name"];
+      // $file_path = $_SERVER["DOCUMENT_ROOT"]."/".$_FILES["uploadfile"]["name"];
+      echo "파일 이름 :".$_FILES["uploadfile"]["name"]."<br>";
+      echo "파일 크기 :".$_FILES["uploadfile"]["size"]."<br>";
+      echo "파일 타입 :".$_FILES["uploadfile"]["type"]."<br>";
+      echo "파일 에러 :".$_FILES["uploadfile"]["error"]."<br>";
+      echo "임시 파일 :".$_FILES["uploadfile"]["tmp_name"]."<br>";
+      echo "파일 경로 :".$file_path."<br>\n";
+      echo "<BR>";
+      if(move_uploaded_file($_FILES["uploadfile"]["tmp_name"],$file_path)){
+        $img_dir = "/Library/WebServer/Documents/images/";
+        $img_path = $img_dir.$_FILES["uploadfile"]["name"];
+        $size = getimagesize($file_path);
+        echo $img_path."<BR>";
+      ?>
+      <IMG src="<?=$img_path?>" <?=$size[3]?>><BR>
+      <b><?=$_POST["comment"]?></b><BR>
+      <?php
+      } else {
+        echo "정상적으로 업로드되지 않았습니다.";
+      }
+
       ?>
       <BR>
       <input type="submit" name="confirm" value="확인">
