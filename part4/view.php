@@ -1,5 +1,10 @@
 <?php
   session_start();
+  $_SESSION["onname"] = $_POST["onname"];
+  $_SESSION["bonmun"] = $_POST["bonmun"];
+  if(isset($_POST["user_id"])){
+      $_SESSION["user_id"] = $_POST["user_id"];
+  }
 ?>
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
@@ -9,10 +14,14 @@
   </head>
   <body>
     <?php
-      if (isset($_POST["confirm"])) {
+      // if (isset($_POST["confirm"])) {
     ?>
     <?php
-      print $_SESSION["onname"]."님<BR><BR>";
+      if (!empty($_SESSION['onname'])) {
+          print $_SESSION["onname"]."님<BR><BR>";
+      } else {
+        print "이름을 입력해주세요.<BR>";
+      }
       if (isset($_POST["gender"])) {
         print "성별: ".$_POST["gender"]."<BR>";
       } else {
@@ -23,26 +32,68 @@
       } else {
         print "사는 곳을 선택해주세요.<BR>";
       }
-      if (isset($_POST["bobby"])) {
-        $last_key = end($_POST["bobby"]);
-        print "저의 취미는 ";
-        foreach ($_POST["bobby"] as $hobby) {
-          if ($hobby != $last_key) {
-            print $hobby.",";
+      if (isset($_POST["hobby"])) {
+        print "저의 취미는 ".implode(',', $_POST["hobby"])."<BR>";
+      } else {
+        print "저의 취미는 없습니다.<BR>";
+      }
+      if (!empty($_SESSION["bonmun"])) {
+        print "본문 :<BR>";
+        print nl2br($_SESSION["bonmun"])."<BR>";
+      } else {
+        print "본문을 입력해주세요.<BR>";
+      }
+      if (isset($_FILES["uploadfile"])) {
+        $resizeX = 300;
+        $thumbnail_name = "thumbnail.jpg";
+        $file_dir = '/Library/WebServer/Documents/images/';
+        $file_path = $file_dir.$_FILES["uploadfile"]["name"];
+        $thumbnail_file_path = $file_dir.$thumbnail_name;
+        // echo "파일 이름 :".$_FILES["uploadfile"]["name"]."<br>";
+        // echo "파일 크기 :".$_FILES["uploadfile"]["size"]."<br>";
+        // echo "파일 타입 :".$_FILES["uploadfile"]["type"]."<br>";
+        // echo "파일 에러 :".$_FILES["uploadfile"]["error"]."<br>";
+        // echo "임시 파일 :".$_FILES["uploadfile"]["tmp_name"]."<br>";
+        // echo "파일 경로 :".$file_path."<br>";
+        // echo "섬파일 경로 :".$thumbnail_file_path."<br>";
+        // echo "<BR>";
+        if(move_uploaded_file($_FILES["uploadfile"]["tmp_name"],$file_path)){
+          $img_dir = "/images/";
+          $img_path = $img_dir.$_FILES["uploadfile"]["name"];
+          $thumbnail_img_path = $img_dir.$thumbnail_name;
+          if (mb_strpos($_FILES['uploadfile']['type'], 'jpeg')) {
+            $gdimg_in = imagecreatefromjpeg($file_path);
+            $ix = imagesx($gdimg_in);
+            $iy = imagesy($gdimg_in);
+            $ox = $resizeX;
+            $oy = ($ox * $iy) / $ix;
+            $gdimg_out = imagecreatetruecolor($ox, $oy);
+            imagecopyresized($gdimg_out, $gdimg_in,0,0,0,0,$ox,$oy,$ix,$iy);
+            imagejpeg($gdimg_out, $thumbnail_file_path);
+            imagedestroy($gdimg_in);
+            imagedestroy($gdimg_out);
+            $size = getimagesize($file_path);
+            $size2 = getimagesize($thumbnail_file_path);
+      ?>
+        파일 올리기를 완료하였습니다.<BR>
+        <IMG src="<?=$img_path?>" <?=$size[3]?>><BR>
+        <img src="<?=$thumbnail_img_path?>" <?=$size2[3]?>><BR>
+        <b><?=$_POST["comment"]?></b><BR>
+      <?php
           } else {
-            print $hobby."<BR>";
+            print 'jpeg 형식의 이미지만 업로드하여 주세요.<BR>';
           }
+        } else {
+          echo "정상적으로 업로드되지 않았습니다.";
         }
       } else {
-        print "저의 취미는 없습니다.<BR><BR>";
+        print "파일 업로드를 하지 않았습니다.";
       }
-      print "본문 :<BR>";
-      print nl2br($_SESSION["bonmun"]);
-    ?>
-    <?php
-      } elseif (isset($_POST["back"])) {
+      ?>
+      <?php
+      // } elseif (isset($_POST["back"])) {
      ?>
-     <FONT size="4">텍스트 송신 테스트</FONT>
+     <!-- <FONT size="4">텍스트 송신 테스트</FONT>
      <form name="form1" action="confirm.php" method="post" enctype="multipart/form-data">
        이름: <input type="text" name="onname"><BR>
        성별:
@@ -67,7 +118,7 @@
        <!-- <input type="checkbox" name="hobby[]" value="스포츠">스포츠<BR>
        <input type="checkbox" name="hobby[]" value="영화감상">영화감상<BR>
        <input type="checkbox" name="hobby[]" value="독서">독서<BR><BR> -->
-       <select name="hobby[]" size="5" multiple>
+       <!-- <select name="hobby[]" size="5" multiple>
          <option value="독서">독서</option>
          <option value="영화감상">영화감상</option>
          <option value="영어회화">영어회화</option>
@@ -87,14 +138,14 @@
        설명:<input type="text" name="comment"><BR><BR>
        <input type="submit" value="송신">
        <input type="hidden" name="user_id" value="0001">
-     </form>
+     </form> -->
     <?php
-      }else{
+      // }else{
      ?>
-     오류입니다. <BR>
-     <a href="form.html">form.html</a>로 돌아갑니다.
+     <!-- 오류입니다. <BR>
+     <a href="form.html">form.html</a>로 돌아갑니다. -->
     <?php
-      }
+      // }
      ?>
   </body>
 </html>
