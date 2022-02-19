@@ -11,10 +11,16 @@
       $pdo = new PDO($dsn, $db_user, $db_pass);
       $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
       $pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
-      print "접속하였습니다.<br>";
     } catch (PDOException $Exception) {
       die('오류:'.$Exception->getMessage());
     }
     return $pdo;
+  }
+
+  function id_reset()
+  {
+    $query = "ALTER TABLE member AUTO_INCREMENT=1";
+    $stmt = $pdo->prepare($query);
+    $stmt->execute();
   }
  ?>
